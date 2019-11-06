@@ -31,7 +31,15 @@ class ParsedResult(ParsedResultBase):
         # 2019. 6. 2 오후 11:03:00
         ampm = "오전" if self.hour < 12 else "오후"
         date = "2019. %s. %s %s %s:%s:00" % (self.month, self.day, ampm, self.hour % 12, self.minute)
-        datalist = [date, self.place, "", "", date, self.amount, "카드구매", self.card_name]
+        try:
+            category = self.in_out
+        except:
+            category = "카드구매"
+        try:
+            name = self.card_name
+        except:
+            name = self.account_no
+        datalist = [date, self.place, "", "", date, self.amount, category, name]
         if self.is_cancelled:
             datalist.append("CANCEL")
         return ",".join(map(str, datalist))
@@ -105,6 +113,8 @@ def get_parser(typestr):
         return HyundaiCardParser()
     if typestr in ["우리", "우리카드", "Woori"]:
         return WooriCardParser()
+    if typestr in ["우리은행", "wooribank"]:
+        return WooriBankParser()
     else:
         raise AttributeError("Not supported type:%s" % typestr)
 
@@ -164,3 +174,20 @@ class WooriCardParser(SmsParserBase):
         res = pat.search(target)
         if res:
             return {'result': res, 'pattern': pat, 'group': res.groupdict()}
+
+
+class WooriBankParser(SmsParserBase):
+    def __init__(self):
+        pass
+
+    def _parse_internal(self, target):
+        pat = re.compile(r'\[Web발신\]\n'
+                         r'우리 (?P<month>\d*)/(?P<day>\d*) (?P<hour>\d*):(?P<minute>\d*)\n'
+                         r'(?P<account_no>.*)\n'
+                         r'(?P<in_out>.*) (?P<amount>[\d,]*)원\n'
+                         r'(?P<place>.*)\n'
+                         r'잔액 (?P<balance>.*)원\n')
+        res = pat.search(target)
+        if res:
+            return {'result': res, 'pattern': pat, 'group': res.groupdict()}
+
