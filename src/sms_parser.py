@@ -111,10 +111,11 @@ def get_parser(typestr):
     """
     if typestr in ["현대", "현대카드", "Hyundai"]:
         return HyundaiCardParser()
-    if typestr in ["우리", "우리카드", "Woori"]:
+    elif typestr in ["우리", "우리카드", "Woori"]:
         return WooriCardParser()
-    if typestr in ["우리은행", "wooribank"]:
+    elif typestr in ["우리은행", "wooribank"]:
         return WooriBankParser()
+    elif typestr in ["국민카드", "국민", "kookmin", "KookminCard"]:
     else:
         raise AttributeError("Not supported type:%s" % typestr)
 
