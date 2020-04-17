@@ -185,6 +185,19 @@ class WooriCardParser(SmsParserBase):
 
         pat = re.compile(
             r"\[Web발신\]\n"
+            r"(?P<card_name>.*)승인\n"
+            r"(?P<name_part>.*)님\n"
+            r"(?P<amount>[\d,]*)원 (?P<installment>.*)\n"
+            r"(?P<month>\d*)/(?P<day>\d*) (?P<hour>\d*):(?P<minute>\d*)\n"
+            r"(?P<place>.*)\n"
+            r"POINT(?P<point>[\d,]*)점 사용\n"
+        )
+        res = pat.search(target)
+        if res:
+            return {"result": res, "pattern": pat, "group": res.groupdict()}
+
+        pat = re.compile(
+            r"\[Web발신\]\n"
             r"(?P<card_name>.*)매출접수\n"
             r"(?P<name_part>.*)님\n"
             r"(?P<amount>[\d,]*)원\n"
@@ -194,6 +207,20 @@ class WooriCardParser(SmsParserBase):
         res = pat.search(target)
         if res:
             return {"result": res, "pattern": pat, "group": res.groupdict()}
+
+        pat = re.compile(
+            r"\[Web발신\]\n"
+            r"(?P<card_name>.*)승인취소\n"
+            r"(?P<name_part>.*)님\n"
+            r"(?P<amount>[\d,]*)원\n"
+            r"(?P<month>\d*)/(?P<day>\d*) (?P<hour>\d*):(?P<minute>\d*)\n"
+            r"(?P<place>.*)\n"
+        )
+        res = pat.search(target)
+        if res:
+            groupdict = res.groupdict()
+            groupdict["is_cancelled"] = True
+            return {"result": res, "pattern": pat, "group": groupdict}
 
 
 class KookminCardParser(SmsParserBase):
