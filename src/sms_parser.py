@@ -116,6 +116,7 @@ def get_parser(typestr):
     elif typestr in ["우리은행", "wooribank"]:
         return WooriBankParser()
     elif typestr in ["국민카드", "국민", "kookmin", "KookminCard"]:
+        return KookminCardParser()
     else:
         raise AttributeError("Not supported type:%s" % typestr)
 
@@ -175,6 +176,26 @@ class WooriCardParser(SmsParserBase):
         res = pat.search(target)
         if res:
             return {'result': res, 'pattern': pat, 'group': res.groupdict()}
+
+
+
+class KookminCardParser(SmsParserBase):
+    def __init__(self):
+        pass
+
+    def _parse_internal(self, target):
+        pat = re.compile(r'\[Web발신\]\n'
+                         r'KB국민카드(?P<card_name>.*)승인\n'
+                         r'(?P<name_part>.*)\n'
+                         r'(?P<amount>[\d,]*)원 (?P<installment>.*)\n'
+                         r'(?P<month>\d*)/(?P<day>\d*) (?P<hour>\d*):(?P<minute>\d*)\n'
+                         r'(?P<place>.*)\n'
+                         r'누적(?P<accumulated>[\d,]*)원')
+        res = pat.search(target)
+        if res:
+            return {'result': res, 'pattern': pat, 'group': res.groupdict()}
+
+
 
 
 class WooriBankParser(SmsParserBase):
