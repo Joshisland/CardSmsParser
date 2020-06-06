@@ -30,7 +30,7 @@ class ParsedResult(ParsedResultBase):
     def to_str(self):
         # 2019. 6. 2 오후 11:03:00
         ampm = "오전" if self.hour < 12 else "오후"
-        date = "2019. %s. %s %s %s:%s:00" % (
+        date = "2020. %s. %s %s %s:%s:00" % (
             self.month,
             self.day,
             ampm,
@@ -170,6 +170,7 @@ class WooriCardParser(SmsParserBase):
         pass
 
     def _parse_internal(self, target):
+        # Note: 가족카드에는 누적액이 안찍힘
         pat = re.compile(
             r"\[Web발신\]\n"
             r"(?P<card_name>.*)승인\n"
@@ -177,7 +178,7 @@ class WooriCardParser(SmsParserBase):
             r"(?P<amount>[\d,]*)원 (?P<installment>.*)\n"
             r"(?P<month>\d*)/(?P<day>\d*) (?P<hour>\d*):(?P<minute>\d*)\n"
             r"(?P<place>.*)\n"
-            r"누적(?P<accumulated>[\d,]*)원"
+            # r"누적(?P<accumulated>[\d,]*)원"
         )
         res = pat.search(target)
         if res:

@@ -38,7 +38,7 @@ class ParserTestCase(unittest.TestCase):
         src = '[Web발신]\n우리(3890)승인\n홍*동님\n8,500원 일시불\n08/12 19:11\n풍년옥\n누적1,307,020원'
         result = get_parser('우리카드').parse(src)
         expected = {'card_name': '우리(3890)', 'name_part': '홍*동', 'amount': 8500, 'installment': '일시불', 'month': 8,
-                    'day': 12, 'hour': 19, 'minute': 11, 'place': '풍년옥', 'accumulated': 1307020}
+                    'day': 12, 'hour': 19, 'minute': 11, 'place': '풍년옥'}
         for key, value in expected.items():
             self.assertEqual(expected[key], getattr(result, key))
 
